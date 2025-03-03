@@ -14,7 +14,7 @@ def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Man
     """
     
     #TODO: Jeg kan legge til noe kode som gjør at denne funksjonen sier ifra hvis det er noen av argumentene som mangler.
-    filmer.append({"Tittel":tittel, "Regissør":regissør, "Produsent":produsent, "År":år, "Sjanger":sjanger})
+    filmer.append({"tittel":tittel, "regissør":regissør, "produsent":produsent, "år":år, "sjanger":sjanger})
     
     print("Film lagt til i `filmer` listen.")
     
@@ -44,7 +44,7 @@ def søk_film(tittel: str) -> list[dict]:
         list[dict]: Filmene som har tittlen.
     """
     #TODO: Legg till et argument til, dette argumentet bestemmer hva man søker etter, sånn man kan søke etter regissører, produsenter etc.
-    tittler = [film["Tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
+    tittler = [film["tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return 
 
@@ -73,3 +73,18 @@ def last_inn_fra_fil(filnavn: str) -> None:
         filmer = json.load(json_file)
     
     
+    
+def sorter_filmer(kirterium: str, økende: bool = True) -> list[dict]:
+    """Viser og sorterer filmene i databasen etter en spesifik rekkefølge.
+
+    Args:
+        kirterium (str): Hvordan databasen skal sorteres, mulige verdier: `tittel` som sorterer etter film tittlene i alfabetisk rekkefølge (A → Å), `regissør` som sorterer etter filmenes regissører navn i alfabetisk rekkefølge (A → Å), `produsent` som sorterer etter filmenes produsentens navn i alfabetisk rekkefølge (A → Å), `år` som sorterer filmene etter år i økende rekkefølge (1→9).
+        økende (bool): Hvis `True` sorterer ting i en økende rekkefølge, for alfaberisk sortering så går det fra A til Å, og for tall sortering så går det fra lavt tall til stort tall. Hvis `False` så gjør den det motsatte.
+    Returns:
+        list[dict]: filmene, sortert.
+    """
+    global filmer
+    filmer = sorted(filmer, key = lambda k: k[kirterium.lower()], reverse=not økende)
+
+last_inn_fra_fil("Filmer")
+vis_filmer()
