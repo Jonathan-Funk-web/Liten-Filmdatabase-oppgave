@@ -45,23 +45,27 @@ def søk_film(tittel:str) -> list[dict]:
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return 
 
-def lagre_til_fil(filnavn:str) -> bool:
+def lagre_til_fil(filnavn:str):
     """Lagrer listen `filmer` til en JSON fil.
 
     Args:
-        filnavn (str): Navnet til filen
-
-    Returns:
-        bool: er `True` hvis filen ble lagret, `False` hvis noe gikk galt med lagringen.
+        filnavn (str): Navnet til JSON filen.
     """
+    #TODO: Legg til en check for at filen faktisk ble lagret.
+    #TODO: Skjekk hvis `filnavn` ender med `.json`, hvis den gjør det, ikke legg till `.json`.
+    
     with open(filnavn +".json", "w", encoding="utf8") as json_file:
         json.dump(filmer,json_file,ensure_ascii=False)
 
-legg_til_film()
-legg_til_film("Interstellar", "Christopher Nolan", "Emma Thomas", 2014, ["Sci-Fi", "Drama"])
-legg_til_film("Inception", "Christopher Nolan", "Emma Thomas", 2010, ["Sci-Fi", "Action"])
-legg_til_film("The Dark Knight", "Christopher Nolan", "Charles Roven", 2008, ["Action", "Crime"])
-legg_til_film("Pulp Fiction", "Quentin Tarantino", "Lawrence Bender", 1994, ["Crime", "Drama"])
-legg_til_film("The Matrix", "Lana Wachowski", "Joel Silver", 1999, ["Sci-Fi", "Action"])
+def last_inn_fra_fil(filnavn:str):
+    """Laster in filmer fra en JSON fil.
 
-lagre_til_fil("film liste")
+    Args:
+        filnavn (str): Navnet til JSON filen.
+    """
+    #TODO: Skjekk hvis `filnavn` ender med `.json`, hvis den gjør det, ikke legg till `.json`.
+    
+    global filmer
+    with open(filnavn + ".json", "r") as json_file:
+        filmer = json.load(json_file)
+    
