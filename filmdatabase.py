@@ -30,11 +30,13 @@ def vis_filmer() -> list[dict] | int:
     if len(filmer) == 0:
         print("Det er ingen filmer i databasen.")
         return 0
+    
     for film in filmer:
-        print(filmer)
-        return len(filmer)
+        print(film)
+    
+    return len(filmer)
 
-def søk_film(tittel:str) -> list[dict]:
+def søk_film(tittel: str) -> list[dict]:
     """Søker gjennom databasen (`filmer`) etter filmer som ineholder tittelen `tittel`. Den printer (og returner) så de filmene som en liste av ordbøker.
     Args:
         tittel (str): Tittelen til filmen.
@@ -46,7 +48,7 @@ def søk_film(tittel:str) -> list[dict]:
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return 
 
-def lagre_til_fil(filnavn:str):
+def lagre_til_fil(filnavn: str) -> None:
     """Lagrer listen `filmer` til en JSON fil.
 
     Args:
@@ -58,7 +60,7 @@ def lagre_til_fil(filnavn:str):
     with open(filnavn +".json", "w", encoding="utf8") as json_file:
         json.dump(filmer,json_file,ensure_ascii=False)
 
-def last_inn_fra_fil(filnavn:str):
+def last_inn_fra_fil(filnavn: str) -> None:
     """Laster in filmer fra en JSON fil.
 
     Args:
@@ -67,6 +69,7 @@ def last_inn_fra_fil(filnavn:str):
     #TODO: Skjekk hvis `filnavn` ender med `.json`, hvis den gjør det, ikke legg till `.json`.
     
     global filmer
-    with open(filnavn + ".json", "r") as json_file:
+    with open(filnavn + ".json", "r", encoding="utf8") as json_file:
         filmer = json.load(json_file)
+    
     
