@@ -1,3 +1,4 @@
+import json
 filmer = []
 
 def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Mangler", produsent: str ="Produsent Mangler", år: int = 0, sjanger: list[str] = ["Sjanger(e) Mangler"]) -> None:
@@ -33,7 +34,7 @@ def vis_filmer() -> list[dict] | int:
         print(filmer)
         return len(filmer)
 
-def søk_film(tittel) -> list[dict]:
+def søk_film(tittel:str) -> list[dict]:
     """Søker gjennom databasen (`filmer`) etter filmer som ineholder tittelen `tittel`. Den printer (og returner) så de filmene som en liste av ordbøker.
     Args:
         tittel (str): Tittelen til filmen.
@@ -44,6 +45,18 @@ def søk_film(tittel) -> list[dict]:
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return 
 
+def lagre_til_fil(filnavn:str) -> bool:
+    """Lagrer listen `filmer` til en JSON fil.
+
+    Args:
+        filnavn (str): Navnet til filen
+
+    Returns:
+        bool: er `True` hvis filen ble lagret, `False` hvis noe gikk galt med lagringen.
+    """
+    with open(filnavn +".json", "w", encoding="utf8") as json_file:
+        json.dump(filmer,json_file,ensure_ascii=False)
+
 legg_til_film()
 legg_til_film("Interstellar", "Christopher Nolan", "Emma Thomas", 2014, ["Sci-Fi", "Drama"])
 legg_til_film("Inception", "Christopher Nolan", "Emma Thomas", 2010, ["Sci-Fi", "Action"])
@@ -51,5 +64,4 @@ legg_til_film("The Dark Knight", "Christopher Nolan", "Charles Roven", 2008, ["A
 legg_til_film("Pulp Fiction", "Quentin Tarantino", "Lawrence Bender", 1994, ["Crime", "Drama"])
 legg_til_film("The Matrix", "Lana Wachowski", "Joel Silver", 1999, ["Sci-Fi", "Action"])
 
-
-søk_film("in")
+lagre_til_fil("film liste")
