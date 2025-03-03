@@ -41,6 +41,7 @@ def søk_film(tittel:str) -> list[dict]:
     Returns:
         list[dict]: Filmene som har tittlen.
     """
+    #TODO: Legg till et argument til, dette argumentet bestemmer hva man søker etter, sånn man kan søke etter regissører, produsenter etc.
     tittler = [film["Tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return 
