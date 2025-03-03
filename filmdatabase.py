@@ -30,5 +30,26 @@ def vis_filmer() -> list[dict] | int:
         print("Det er ingen filmer i databasen.")
         return 0
     for film in filmer:
-        print(film)
+        print(filmer)
         return len(filmer)
+
+def søk_film(tittel) -> list[dict]:
+    """Søker gjennom databasen (`filmer`) etter filmer som ineholder tittelen `tittel`. Den printer (og returner) så de filmene som en liste av ordbøker.
+    Args:
+        tittel (str): Tittelen til filmen.
+    Returns:
+        list[dict]: Filmene som har tittlen.
+    """
+    tittler = [film["Tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
+    print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
+    return 
+
+legg_til_film()
+legg_til_film("Interstellar", "Christopher Nolan", "Emma Thomas", 2014, ["Sci-Fi", "Drama"])
+legg_til_film("Inception", "Christopher Nolan", "Emma Thomas", 2010, ["Sci-Fi", "Action"])
+legg_til_film("The Dark Knight", "Christopher Nolan", "Charles Roven", 2008, ["Action", "Crime"])
+legg_til_film("Pulp Fiction", "Quentin Tarantino", "Lawrence Bender", 1994, ["Crime", "Drama"])
+legg_til_film("The Matrix", "Lana Wachowski", "Joel Silver", 1999, ["Sci-Fi", "Action"])
+
+
+søk_film("in")
