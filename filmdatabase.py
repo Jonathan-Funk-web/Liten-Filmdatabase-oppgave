@@ -71,9 +71,7 @@ def last_inn_fra_fil(filnavn: str) -> None:
     global filmer
     with open(filnavn + ".json", "r", encoding="utf8") as json_file:
         filmer = json.load(json_file)
-    
-    
-    
+
 def sorter_filmer(kirterium: str, økende: bool = True) -> list[dict]:
     """Viser og sorterer filmene i databasen etter en spesifik rekkefølge.
 
@@ -86,5 +84,52 @@ def sorter_filmer(kirterium: str, økende: bool = True) -> list[dict]:
     global filmer
     filmer = sorted(filmer, key = lambda k: k[kirterium.lower()], reverse=not økende)
 
-last_inn_fra_fil("Filmer")
-vis_filmer()
+def meny() -> None:
+    """
+    En konsollbasert meny, som virker via en while-løkke.
+    """
+    # TODO: Legg til litt farger/bedre tekst for å være mer nybegynnervennlig.
+    last_inn_fra_fil("Filmer")
+    while True:
+        print("\nMeny\n"
+            " [1] Legg til ny film i databasen\n"
+            " [2] Vis alle filmer i databasen\n"
+            " [3] Søk etter filmer\n"
+            " [4] Sortere databasen\n"
+            " [5] Lagre og avslutt programmet")
+        
+        try:
+            meny_valg = int(input("Velg menyvalg (1-5): "))
+        except ValueError:
+            print("Ugyldig input! Vennligst skriv et tall mellom 1 og 5.")
+            continue
+        
+        if meny_valg == 1:
+            tittel = input("Film tittel: ")
+            regissør = input("Film regissør: ")
+            produsent = input("Film produsent: ")
+            år = input("Året filmen kom ut: ")
+            
+            sjangere = []
+            while True:
+                sjanger = input("Film sjanger (trykk enter for å avslutte): ")
+                if sjanger == "":
+                    break
+                sjangere.append(sjanger)
+
+            legg_til_film(tittel, regissør, produsent, år, sjangere)
+        elif meny_valg == 2:
+            vis_filmer()
+        elif meny_valg == 3:
+            søk_film(input("Film navn: "))
+        elif meny_valg == 4:
+            sorter_filmer(input("Sorteringskriterie: "))
+        elif meny_valg == 5:
+            lagre_til_fil("Filmer")
+            print("Programmet avsluttes...")
+            break  # Avslutter løkken og dermed programmet
+        else:
+            print("Ugyldig valg, prøv igjen!")
+
+# Kaller meny-funksjonen for å starte programmet
+meny()
