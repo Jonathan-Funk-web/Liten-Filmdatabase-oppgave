@@ -13,7 +13,6 @@ def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Man
         dict: Slår sammen all infoen in til en ordbok.
     """
     
-    #TODO: Jeg kan legge til noe kode som gjør at denne funksjonen sier ifra hvis det er noen av argumentene som mangler.
     filmer.append({"tittel":tittel, "regissør":regissør, "produsent":produsent, "år":år, "sjanger":sjanger})
     
     print("Film lagt til i `filmer` listen.")
@@ -46,28 +45,23 @@ def søk_film(tittel: str) -> list[dict]:
     #TODO: Legg till et argument til, dette argumentet bestemmer hva man søker etter, sånn man kan søke etter regissører, produsenter etc.
     tittler = [film["tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
-    return 
+    return
 
-def lagre_til_fil(filnavn: str) -> None:
+def lagre_til_fil(filnavn: str = "Filmer" ) -> None:
     """Lagrer listen `filmer` til en JSON fil.
 
     Args:
         filnavn (str): Navnet til JSON filen.
-    """
-    #TODO: Legg til en check for at filen faktisk ble lagret.
-    #TODO: Skjekk hvis `filnavn` ender med `.json`, hvis den gjør det, ikke legg till `.json`.
-    
+    """    
     with open(filnavn +".json", "w", encoding="utf8") as json_file:
         json.dump(filmer,json_file,ensure_ascii=False)
 
-def last_inn_fra_fil(filnavn: str) -> None:
+def last_inn_fra_fil(filnavn: str = "Filmer") -> None:
     """Laster in filmer fra en JSON fil.
 
     Args:
         filnavn (str): Navnet til JSON filen.
-    """
-    #TODO: Skjekk hvis `filnavn` ender med `.json`, hvis den gjør det, ikke legg till `.json`.
-    
+    """    
     global filmer
     with open(filnavn + ".json", "r", encoding="utf8") as json_file:
         filmer = json.load(json_file)
@@ -88,7 +82,6 @@ def meny() -> None:
     """
     En konsollbasert meny, som virker via en while-løkke.
     """
-    # TODO: Legg til litt farger/bedre tekst for å være mer nybegynnervennlig.
     last_inn_fra_fil("Filmer")
     while True:
         print("\nMeny\n"
@@ -100,6 +93,7 @@ def meny() -> None:
         
         try:
             meny_valg = int(input("Velg menyvalg (1-5): "))
+            meny_valg in range(0,6)
         except ValueError:
             print("Ugyldig input! Vennligst skriv et tall mellom 1 og 5.")
             continue
@@ -130,6 +124,3 @@ def meny() -> None:
             break  # Avslutter løkken og dermed programmet
         else:
             print("Ugyldig valg, prøv igjen!")
-
-# Kaller meny-funksjonen for å starte programmet
-meny()
