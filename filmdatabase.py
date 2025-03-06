@@ -1,5 +1,14 @@
+import requests
 import json
+import os                                                                                                                                                                                                          
+from dotenv import load_dotenv
+from pathlib import Path
+
 filmer = []
+
+load_dotenv(Path(".env"))
+API_KEY = os.getenv("OMDb_API_KEY")
+
 
 def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Mangler", produsent: str ="Produsent Mangler", år: int = 0, sjanger: list[str] = ["Sjanger(e) Mangler"]) -> None:
     """Tar de forselige detaljene til filmen og lagrer de som en ordbok i `filmer` listen.
@@ -124,3 +133,8 @@ def meny() -> None:
             break  # Avslutter løkken og dermed programmet
         else:
             print("Ugyldig valg, prøv igjen!")
+
+def legg_til_film_via_OMDb(tittel: str = None) -> json:
+    response = requests.get("https://www.omdbapi.com/?apikey=" + API_KEY + "&t=" + tittel)
+    response_text = json.loads(response.text)
+    legg_til_film(tittel = response_text["Title"],regissør = response_text["Director"],produsent=response_text["Production"],år=response_text["Released"][-4:], sjanger=response_text["Genre"])
