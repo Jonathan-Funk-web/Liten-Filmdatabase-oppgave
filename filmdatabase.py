@@ -138,3 +138,4 @@ def legg_til_film_via_OMDb(tittel: str = None) -> json:
     response = requests.get("https://www.omdbapi.com/?apikey=" + API_KEY + "&t=" + tittel)
     response_text = json.loads(response.text)
     legg_til_film(tittel = response_text["Title"],regissør = response_text["Director"],produsent=response_text["Production"],år=response_text["Released"][-4:], sjanger=response_text["Genre"])
+    return response_text["Poster"]
