@@ -13,3 +13,6 @@ En liten oppgave hvor jeg skal lage et program for å håndtere en liten filmdat
 
 # Bilder
 ![Terminal Example 1](/Bilder/Terminal%20Bilde%201.png)
+![Gui 1](/Bilder/GUI%201.png)
+![Gui 2](/Bilder/GUI%202.png)
+![Gui 3](/Bilder/GUI%203.png)

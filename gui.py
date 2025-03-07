@@ -152,6 +152,7 @@ def legg_til_film_via_OMDb_gui():
 
     # Opprett popup for filminput
     popup = Toplevel()
+    popup.geometry("275x100")
     popup.title("Legg til film via OMDb")
 
     Label(popup, text="Skriv inn filmtittel:").pack(pady=5)
