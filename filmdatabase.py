@@ -98,13 +98,14 @@ def meny() -> None:
             " [2] Vis alle filmer i databasen\n"
             " [3] Søk etter filmer\n"
             " [4] Sortere databasen\n"
-            " [5] Lagre og avslutt programmet")
+            " [5] Legg til film via OMDb\n"
+            " [6] Lagre og avslutt programmet")
         
         try:
-            meny_valg = int(input("Velg menyvalg (1-5): "))
-            meny_valg in range(0,6)
+            meny_valg = int(input("Velg menyvalg (1-6): "))
+            meny_valg in range(0,7)
         except ValueError:
-            print("Ugyldig input! Vennligst skriv et tall mellom 1 og 5.")
+            print("Ugyldig input! Vennligst skriv et tall mellom 1 og 6.")
             continue
         
         if meny_valg == 1:
@@ -128,14 +129,23 @@ def meny() -> None:
         elif meny_valg == 4:
             sorter_filmer(input("Sorteringskriterie: "))
         elif meny_valg == 5:
+            legg_til_film_via_OMDb(input("Film navn: "))
+        elif meny_valg == 6:
             lagre_til_fil("Filmer")
             print("Programmet avsluttes...")
             break  # Avslutter løkken og dermed programmet
         else:
-            print("Ugyldig valg, prøv igjen!")
+            print("\nUgyldig valg, prøv igjen!")
 
 def legg_til_film_via_OMDb(tittel: str = None) -> json:
     response = requests.get("https://www.omdbapi.com/?apikey=" + API_KEY + "&t=" + tittel)
     response_text = json.loads(response.text)
     legg_til_film(tittel = response_text["Title"],regissør = response_text["Director"],produsent=response_text["Production"],år=response_text["Released"][-4:], sjanger=response_text["Genre"])
     return response_text["Poster"]
+
+
+if not os.path.exists("Filmer.json"):
+    with open("Filmer.json", "w", encoding="utf8") as file:
+        json.dump([], file, ensure_ascii=False)
+
+meny()
