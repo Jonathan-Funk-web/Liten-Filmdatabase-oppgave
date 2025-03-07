@@ -1,11 +1,15 @@
 import filmdatabase as fd
 from tkinter import *
 from tkinter import messagebox, simpledialog
+import requests
+from PIL import Image, ImageTk
+from io import BytesIO
+import json
 
 # Oppretter hovedvinduet
 root = Tk()
 root.title("Filmdatabase")
-root.geometry("400x400")
+root.geometry("275x300")
 
 # Funksjon for å vise filmer i et popup-vindu
 def vis_filmer_gui():
@@ -52,6 +56,78 @@ def sorter_filmer_gui():
     else:
         messagebox.showerror("Feil", "Ugyldig sorteringskriterie!")
 
+def legg_til_film_via_OMDb_gui():
+    def hent_film():
+        tittel = entry_tittel.get()
+        if not tittel:
+            messagebox.showerror("Feil", "Du må skrive inn en tittel!")
+            return
+        
+        try:
+            # Hent data fra OMDb API
+            response = requests.get(f"https://www.omdbapi.com/?apikey={fd.API_KEY}&t={tittel}")
+            film_data = json.loads(response.text)
+            
+            if film_data["Response"] == "False":
+                messagebox.showerror("Feil", "Fant ikke filmen.")
+                return
+            
+            poster_url = film_data["Poster"]
+            vis_filmvalg(film_data, poster_url)
+
+        except Exception as e:
+            messagebox.showerror("Feil", f"En feil oppstod: {e}")
+
+    def vis_filmvalg(film_data, poster_url):
+        # Lukk input-vinduet
+        popup.destroy()
+
+        # Opprett nytt vindu for bekreftelse
+        bekreft_vindu = Toplevel()
+        bekreft_vindu.title("Bekreft film")
+
+        Label(bekreft_vindu, text="Er dette filmen du vil legge til?", font=("Arial", 14)).pack(pady=10)
+
+        # Hent og vis filmplakat
+        response = requests.get(poster_url)
+        img_data = BytesIO(response.content)
+        img = Image.open(img_data)
+        img = img.resize((200, 300), Image.Resampling.LANCZOS)  # Skaler bildet
+        photo = ImageTk.PhotoImage(img)
+
+        label_img = Label(bekreft_vindu, image=photo)
+        label_img.image = photo  # Behold referanse til bildet
+        label_img.pack(pady=10)
+
+        # Funksjon for å legge til filmen i databasen
+        def bekreft():
+            fd.legg_til_film(
+                tittel=film_data["Title"],
+                regissør=film_data["Director"],
+                produsent=film_data["Production"],
+                år=film_data["Released"][-4:],
+                sjanger=film_data["Genre"].split(", ")
+            )
+            messagebox.showinfo("Suksess", "Filmen ble lagt til i databasen!")
+            bekreft_vindu.destroy()
+
+        # Knappene for bekreftelse
+        Button(bekreft_vindu, text="Ja", command=bekreft).pack(side=LEFT, padx=20, pady=10)
+        Button(bekreft_vindu, text="Nei", command=bekreft_vindu.destroy).pack(side=RIGHT, padx=20, pady=10)
+
+        bekreft_vindu.mainloop()
+
+    # Opprett popup for filminput
+    popup = Toplevel()
+    popup.title("Legg til film via OMDb")
+
+    Label(popup, text="Skriv inn filmtittel:").pack(pady=5)
+    entry_tittel = Entry(popup)
+    entry_tittel.pack(pady=5)
+
+    Button(popup, text="Søk", command=hent_film).pack(pady=5)
+    popup.mainloop()
+
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
     fd.lagre_til_fil("Filmer")
@@ -63,6 +139,7 @@ Label(root, text="Filmdatabase", font=("Arial", 16)).pack(pady=10)
 Button(root, text="Vis alle filmer", command=vis_filmer_gui).pack(pady=5)
 Button(root, text="Legg til ny film", command=legg_til_film_gui).pack(pady=5)
 Button(root, text="Søk etter film", command=søk_film_gui).pack(pady=5)
+Button(root, text="Legg til film via OMDb", command=legg_til_film_via_OMDb_gui).pack(pady=5)
 Button(root, text="Sorter filmer", command=sorter_filmer_gui).pack(pady=5)
 Button(root, text="Lagre og avslutt", command=lagre_og_avslutt).pack(pady=5)
 
