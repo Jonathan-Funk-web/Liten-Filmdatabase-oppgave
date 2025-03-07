@@ -147,5 +147,3 @@ def legg_til_film_via_OMDb(tittel: str = None) -> json:
 if not os.path.exists("Filmer.json"):
     with open("Filmer.json", "w", encoding="utf8") as file:
         json.dump([], file, ensure_ascii=False)
-
-meny()
