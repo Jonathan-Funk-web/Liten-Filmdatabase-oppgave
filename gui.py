@@ -22,17 +22,50 @@ def vis_filmer_gui():
 
 # Funksjon for å legge til en film
 def legg_til_film_gui():
-    tittel = simpledialog.askstring("Legg til film", "Film tittel:")
-    regissør = simpledialog.askstring("Legg til film", "Regissør:")
-    produsent = simpledialog.askstring("Legg til film", "Produsent:")
-    år = simpledialog.askinteger("Legg til film", "År:")
-    sjanger = simpledialog.askstring("Legg til film", "Sjangere (kommaseparert):")
+    def legg_til():
+        tittel = entry_tittel.get()
+        regissor = entry_regissor.get()
+        produsent = entry_produsent.get()
+        try:
+            ar = int(entry_ar.get())
+        except ValueError:
+            messagebox.showerror("Feil", "År må være et tall!")
+            return
+        sjanger = entry_sjanger.get()
+        
+        if tittel and regissor and produsent and sjanger:
+            fd.legg_til_film(tittel, regissor, produsent, ar, sjanger.split(","))
+            messagebox.showinfo("Suksess", "Filmen ble lagt til!")
+            popup.destroy()
+        else:
+            messagebox.showerror("Feil", "Alle felt må fylles ut!")
+
+    popup = Toplevel()
+    popup.title("Legg til film")
     
-    if tittel and regissør and produsent and år and sjanger:
-        fd.legg_til_film(tittel, regissør, produsent, år, sjanger.split(","))
-        messagebox.showinfo("Suksess", "Filmen ble lagt til!")
-    else:
-        messagebox.showerror("Feil", "Alle felt må fylles ut!")
+    Label(popup, text="Film tittel:").grid(row=0, column=0)
+    entry_tittel = Entry(popup)
+    entry_tittel.grid(row=0, column=1)
+    
+    Label(popup, text="Regissør:").grid(row=1, column=0)
+    entry_regissor = Entry(popup)
+    entry_regissor.grid(row=1, column=1)
+    
+    Label(popup, text="Produsent:").grid(row=2, column=0)
+    entry_produsent = Entry(popup)
+    entry_produsent.grid(row=2, column=1)
+    
+    Label(popup, text="År:").grid(row=3, column=0)
+    entry_ar = Entry(popup)
+    entry_ar.grid(row=3, column=1)
+    
+    Label(popup, text="Sjangere (kommaseparert):").grid(row=4, column=0)
+    entry_sjanger = Entry(popup)
+    entry_sjanger.grid(row=4, column=1)
+    
+    Button(popup, text="Legg til", command=legg_til).grid(row=5, column=0, columnspan=2)
+    
+    popup.mainloop()
 
 # Funksjon for å søke etter en film
 def søk_film_gui():
