@@ -4,7 +4,9 @@ from tkinter import messagebox, simpledialog
 import requests
 from PIL import Image, ImageTk
 from io import BytesIO
-import json
+import json, os
+
+API_KEY = os.getenv("OMDb_API_KEY")
 
 # Oppretter hovedvinduet
 root = Tk()
@@ -17,7 +19,7 @@ def vis_filmer_gui():
     if filmer == 0:
         messagebox.showinfo("Filmer", "Det er ingen filmer i databasen.")
     else:
-        film_tekst = "\n".join([f"{film['tittel']} ({film['år']}) - {', '.join(film['sjanger'])}" for film in fd.filmer])
+        film_tekst = "\n".join([f"{film['tittel']} ({film['år']}) - {', '.join(film['sjanger'])}" for film in fd.filmer]) 
         messagebox.showinfo("Filmer i databasen", film_tekst)
 
 # Funksjon for å legge til en film
@@ -90,77 +92,99 @@ def sorter_filmer_gui():
         messagebox.showerror("Feil", "Ugyldig sorteringskriterie!")
 
 def legg_til_film_via_OMDb_gui():
-    def hent_film():
+    root = Toplevel()
+    root.title("Legg til film via OMDb")
+    root.geometry("500x675")
+    
+    page = 1
+    default_poster_url = "https://placehold.co/100x150?text=No+Poster+Available"
+    
+    def hent_filmer(page_num):
+        nonlocal page
+        page = page_num
         tittel = entry_tittel.get()
         if not tittel:
             messagebox.showerror("Feil", "Du må skrive inn en tittel!")
             return
         
-        try:
-            # Hent data fra OMDb API
-            response = requests.get(f"https://www.omdbapi.com/?apikey={fd.API_KEY}&t={tittel}")
-            film_data = json.loads(response.text)
+        url = f"https://www.omdbapi.com/?apikey={API_KEY}&s={tittel}&page={page}"
+        print(f"Calling the URL: {url}")
+        response = requests.get(url)
+        film_data = json.loads(response.text)
+        
+        if film_data["Response"] == "False":
+            messagebox.showerror("Feil", "Fant ingen filmer.")
+            return
+        
+        vis_filmer(film_data["Search"])
+        
+        # Oppdater knappene for navigering
+        forrige_side_btn["state"] = NORMAL if page > 1 else DISABLED
+        neste_side_btn["state"] = NORMAL if len(film_data["Search"]) == 10 else DISABLED
+    
+    def vis_filmer(filmer):
+        for widget in resultat_frame.winfo_children():
+            widget.destroy()
+        
+        for film in filmer:
+            frame = Frame(resultat_frame)
+            frame.pack(pady=5)
             
-            if film_data["Response"] == "False":
-                messagebox.showerror("Feil", "Fant ikke filmen.")
-                return
+            poster_url = film["Poster"] if film["Poster"] != "N/A" else default_poster_url
+            response = requests.get(poster_url)
+            img_data = BytesIO(response.content)
             
-            poster_url = film_data["Poster"]
-            vis_filmvalg(film_data, poster_url)
-
-        except Exception as e:
-            messagebox.showerror("Feil", f"En feil oppstod: {e}")
-
-    def vis_filmvalg(film_data, poster_url):
-        # Lukk input-vinduet
-        popup.destroy()
-
-        # Opprett nytt vindu for bekreftelse
-        bekreft_vindu = Toplevel()
-        bekreft_vindu.title("Bekreft film")
-
-        Label(bekreft_vindu, text="Er dette filmen du vil legge til?", font=("Arial", 14)).pack(pady=10)
-
-        # Hent og vis filmplakat
-        response = requests.get(poster_url)
-        img_data = BytesIO(response.content)
-        img = Image.open(img_data)
-        img = img.resize((200, 300), Image.Resampling.LANCZOS)  # Skaler bildet
-        photo = ImageTk.PhotoImage(img)
-
-        label_img = Label(bekreft_vindu, image=photo)
-        label_img.image = photo  # Behold referanse til bildet
-        label_img.pack(pady=10)
-
-        # Funksjon for å legge til filmen i databasen
-        def bekreft():
-            fd.legg_til_film(
-                tittel=film_data["Title"],
-                regissør=film_data["Director"],
-                produsent=film_data["Production"],
-                år=film_data["Released"][-4:],
-                sjanger=film_data["Genre"].split(", ")
-            )
-            messagebox.showinfo("Suksess", "Filmen ble lagt til i databasen!")
-            bekreft_vindu.destroy()
-
-        # Knappene for bekreftelse
-        Button(bekreft_vindu, text="Ja", command=bekreft).pack(side=LEFT, padx=20, pady=10)
-        Button(bekreft_vindu, text="Nei", command=bekreft_vindu.destroy).pack(side=RIGHT, padx=20, pady=10)
-
-        bekreft_vindu.mainloop()
-
-    # Opprett popup for filminput
-    popup = Toplevel()
-    popup.geometry("275x100")
-    popup.title("Legg til film via OMDb")
-
-    Label(popup, text="Skriv inn filmtittel:").pack(pady=5)
-    entry_tittel = Entry(popup)
+            try:
+                img = Image.open(img_data)
+            except Exception:
+                img = Image.new("RGB", (100, 150), color=(200, 200, 200))  # Grå bilde hvis feil
+            
+            img = img.resize((100, 150), Image.Resampling.LANCZOS)
+            photo = ImageTk.PhotoImage(img)
+            
+            btn = Button(frame, image=photo, command=lambda f=film: velg_film(f))
+            btn.image = photo
+            btn.pack(side=LEFT, padx=5)
+            
+            Label(frame, text=f"{film['Title']} ({film['Year']})", font=("Arial", 12)).pack(side=LEFT)
+    
+    def velg_film(film):
+        imdb_id = film["imdbID"]
+        url = f"https://www.omdbapi.com/?apikey={API_KEY}&i={imdbID}"
+        response = requests.get(url)
+        film_data = json.loads(response.text)
+        
+        fd.legg_til_film(
+            tittel=film_data["Title"],
+            regissør=film_data["Director"],
+            produsent=film_data["Production"],
+            år=film_data["Released"][-4:],
+            sjanger=film_data["Genre"].split(", ")
+        )
+        messagebox.showinfo("Suksess", f"{film_data['Title']} ble lagt til i databasen!")
+        root.destroy()
+    
+    Label(root, text="Skriv inn filmtittel:", font=("Arial", 12)).pack(pady=5)
+    
+    entry_tittel = Entry(root, font=("Arial", 12), width=40)
     entry_tittel.pack(pady=5)
+    
+    Button(root, text="Søk", font=("Arial", 12), command=lambda: hent_filmer(1)).pack(pady=5)
+    
+    resultat_frame = Frame(root)
+    resultat_frame.pack(pady=10)
+    
+    navigasjon_frame = Frame(root)
+    navigasjon_frame.pack(pady=5)
+    
+    forrige_side_btn = Button(navigasjon_frame, text="Forrige side", command=lambda: hent_filmer(page-1), state=DISABLED)
+    forrige_side_btn.pack(side=LEFT, padx=10)
+    
+    neste_side_btn = Button(navigasjon_frame, text="Neste side", command=lambda: hent_filmer(page+1), state=DISABLED)
+    neste_side_btn.pack(side=LEFT, padx=10)
+    
+    root.mainloop()
 
-    Button(popup, text="Søk", command=hent_film).pack(pady=5)
-    popup.mainloop()
 
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
