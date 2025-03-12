@@ -91,16 +91,22 @@ def sorter_filmer_gui():
     else:
         messagebox.showerror("Feil", "Ugyldig sorteringskriterie!")
 
+page = 1
 def legg_til_film_via_OMDb_gui():
     root = Toplevel()
     root.title("Legg til film via OMDb")
     root.geometry("500x675")
     
-    page = 1
     default_poster_url = "https://placehold.co/100x150?text=No+Poster+Available"
     
-    def hent_filmer(page_num):
-        nonlocal page
+    def hent_filmer(page_num=None):
+        global page
+        if page_num is None:
+            page_num = page  # Bruker eksisterende side hvis ingen er angitt
+
+        if page_num < 1:
+            return  # Hindrer negative sidetall
+
         page = page_num
         tittel = entry_tittel.get()
         if not tittel:
@@ -108,7 +114,6 @@ def legg_til_film_via_OMDb_gui():
             return
         
         url = f"https://www.omdbapi.com/?apikey={API_KEY}&s={tittel}&page={page}"
-        print(f"Calling the URL: {url}")
         response = requests.get(url)
         film_data = json.loads(response.text)
         
@@ -122,35 +127,46 @@ def legg_til_film_via_OMDb_gui():
         forrige_side_btn["state"] = NORMAL if page > 1 else DISABLED
         neste_side_btn["state"] = NORMAL if len(film_data["Search"]) == 10 else DISABLED
     
-    def vis_filmer(filmer):
+    def vis_filmer(filmer=None):
         for widget in resultat_frame.winfo_children():
-            widget.destroy()
-        
+            widget.destroy()  # Fjerner gamle widgets
+
+        row = 0  # Radindeks for grid
+
         for film in filmer:
             frame = Frame(resultat_frame)
-            frame.pack(pady=5)
-            
+            frame.grid(row=row, column=0, pady=5, sticky="w")  # Venstrejustering
+
+            # Hent bilde-URL, bruk placeholder hvis ikke tilgjengelig
             poster_url = film["Poster"] if film["Poster"] != "N/A" else default_poster_url
             response = requests.get(poster_url)
             img_data = BytesIO(response.content)
-            
+
             try:
                 img = Image.open(img_data)
             except Exception:
-                img = Image.new("RGB", (100, 150), color=(200, 200, 200))  # Grå bilde hvis feil
+                img = Image.new("RGB", (100, 150), color=(200, 200, 200))  # Grå bilde ved feil
             
             img = img.resize((100, 150), Image.Resampling.LANCZOS)
             photo = ImageTk.PhotoImage(img)
-            
+
+            # **Bildeknapp**
             btn = Button(frame, image=photo, command=lambda f=film: velg_film(f))
             btn.image = photo
-            btn.pack(side=LEFT, padx=5)
-            
-            Label(frame, text=f"{film['Title']} ({film['Year']})", font=("Arial", 12)).pack(side=LEFT)
-    
+            btn.grid(row=0, column=0, padx=10)  # Legger bildet til venstre
+
+            # **Filmtittel**
+            label = Label(frame, text=f"{film['Title']} ({film['Year']})", font=("Arial", 12), anchor="w", justify=LEFT)
+            label.grid(row=0, column=1, padx=10, sticky="w")  # Plasserer tittelen til høyre for bildet
+
+            row += 1  # Flytt til neste rad
+        # Oppdater canvas scroll-region
+        resultat_canvas.update_idletasks()
+        resultat_canvas.config(scrollregion=resultat_canvas.bbox("all"))
+
     def velg_film(film):
         imdb_id = film["imdbID"]
-        url = f"https://www.omdbapi.com/?apikey={API_KEY}&i={imdbID}"
+        url = f"https://www.omdbapi.com/?apikey={API_KEY}&i={imdb_id}"
         response = requests.get(url)
         film_data = json.loads(response.text)
         
@@ -165,24 +181,38 @@ def legg_til_film_via_OMDb_gui():
         root.destroy()
     
     Label(root, text="Skriv inn filmtittel:", font=("Arial", 12)).pack(pady=5)
-    
+
     entry_tittel = Entry(root, font=("Arial", 12), width=40)
     entry_tittel.pack(pady=5)
-    
-    Button(root, text="Søk", font=("Arial", 12), command=lambda: hent_filmer(1)).pack(pady=5)
-    
-    resultat_frame = Frame(root)
-    resultat_frame.pack(pady=10)
-    
-    navigasjon_frame = Frame(root)
-    navigasjon_frame.pack(pady=5)
-    
-    forrige_side_btn = Button(navigasjon_frame, text="Forrige side", command=lambda: hent_filmer(page-1), state=DISABLED)
-    forrige_side_btn.pack(side=LEFT, padx=10)
-    
-    neste_side_btn = Button(navigasjon_frame, text="Neste side", command=lambda: hent_filmer(page+1), state=DISABLED)
-    neste_side_btn.pack(side=LEFT, padx=10)
-    
+
+    Button(root, text="Søk", font=("Arial", 12), command=hent_filmer).pack(pady=5)
+
+    # Opprett en canvas med scrollbar
+    frame_container = Frame(root)
+    frame_container.pack(pady=10, fill=BOTH, expand=True)
+
+    resultat_canvas = Canvas(frame_container)
+    scrollbar = Scrollbar(frame_container, orient=VERTICAL, command=resultat_canvas.yview)
+    resultat_frame = Frame(resultat_canvas)
+
+    resultat_frame.bind("<Configure>", lambda e: resultat_canvas.configure(scrollregion=resultat_canvas.bbox("all")))
+
+    resultat_canvas.create_window((0, 0), window=resultat_frame, anchor="nw")
+    resultat_canvas.configure(yscrollcommand=scrollbar.set)
+
+    resultat_canvas.pack(side=LEFT, fill=BOTH, expand=True)
+    scrollbar.pack(side=RIGHT, fill=Y)
+
+    # Knappene for sidebytte
+    knapp_frame = Frame(root)
+    knapp_frame.pack(pady=5)
+
+    forrige_side_btn = Button(knapp_frame, text="Forrige side", command=lambda: hent_filmer(page-1))
+    forrige_side_btn.grid(row=0, column=0, padx=5)
+
+    neste_side_btn = Button(knapp_frame, text="Neste side", command=lambda: hent_filmer(page+1))
+    neste_side_btn.grid(row=0, column=1, padx=5)
+
     root.mainloop()
 
 
