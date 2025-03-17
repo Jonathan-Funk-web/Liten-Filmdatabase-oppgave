@@ -166,7 +166,7 @@ def legg_til_film_via_OMDb_gui():
 
     def velg_film(film):
         imdb_id = film["imdbID"]
-        url = f"https://www.omdbapi.com/?apikey={API_KEY}&i={imdb_id}"
+        url = f"https://www.omdbapi.com/?apikey={API_KEY}&i={imdb_id}&plot=full"
         response = requests.get(url)
         film_data = json.loads(response.text)
         
@@ -175,7 +175,8 @@ def legg_til_film_via_OMDb_gui():
             regissør=film_data["Director"],
             produsent=film_data["Production"],
             år=film_data["Released"][-4:],
-            sjanger=film_data["Genre"].split(", ")
+            sjanger=film_data["Genre"].split(", "),
+            plot=film_data["Plot"]
         )
         messagebox.showinfo("Suksess", f"{film_data['Title']} ble lagt til i databasen!")
         root.destroy()
