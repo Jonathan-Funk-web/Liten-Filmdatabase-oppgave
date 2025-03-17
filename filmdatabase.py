@@ -1,8 +1,12 @@
 import requests
 import json
 import os                                                                                                                                                                                                          
+from sklearn.feature_extraction.text import TfidfVectorizer
 from dotenv import load_dotenv
 from pathlib import Path
+from pprint import pprint 
+
+
 
 filmer = []
 
@@ -143,7 +147,20 @@ def legg_til_film_via_OMDb(tittel: str = None) -> json:
     legg_til_film(tittel = response_text["Title"],regissør = response_text["Director"],produsent=response_text["Production"],år=response_text["Released"][-4:], sjanger=response_text["Genre"])
     return response_text["Poster"]
 
+def TFIDF_analysis(documents:list):
+    tfidf = TfidfVectorizer()
+    result = tfidf.fit_transform(documents)
+    tfidf_dict = {}
+    for ele1, ele2 in zip(tfidf.get_feature_names_out(), tfidf.idf_):
+        tfidf_dict.update({ele1:float(ele2)})
+        
+    tfidf_dict = dict(sorted(tfidf_dict.items(), key=lambda item: item[1], reverse=True))
+
+    return tfidf_dict
 
 if not os.path.exists("Filmer.json"):
     with open("Filmer.json", "w", encoding="utf8") as file:
         json.dump([], file, ensure_ascii=False)
+
+
+
