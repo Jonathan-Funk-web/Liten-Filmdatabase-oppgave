@@ -1,11 +1,11 @@
 import requests
 import json
 import os                                                                                                                                                                                                          
-from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from dotenv import load_dotenv
 from pathlib import Path
 from pprint import pprint 
-
+import numpy as np
 
 
 filmer = []
@@ -153,14 +153,27 @@ def TFIDF_analysis(documents:list):
     tfidf_dict = {}
     for ele1, ele2 in zip(tfidf.get_feature_names_out(), tfidf.idf_):
         tfidf_dict.update({ele1:float(ele2)})
-        
     tfidf_dict = dict(sorted(tfidf_dict.items(), key=lambda item: item[1], reverse=True))
-
     return tfidf_dict
+
+def vocabulary_vectorizer(document:list):
+    """
+    Returns:
+        list[0]: Gir vektorer.
+        list[1]: Gir vocabular
+    """
+    vectorizer = CountVectorizer()
+    vectorizer.fit(document)
+    vector = vectorizer.transform(document)
+    return [vector.toarray(),vectorizer.vocabulary_]
+
+def cosine_similarity(vector_a:list, vector_b:list):
+    return np.dot(vector_a,vector_b)/(np.linalg.norm(vector_a)*np.linalg.norm(vector_b))
 
 if not os.path.exists("Filmer.json"):
     with open("Filmer.json", "w", encoding="utf8") as file:
         json.dump([], file, ensure_ascii=False)
 
+test_docs = ["This is a test", "Dette er også en test"]
 
-
+#pprint(cosine_similarity(vocabulary_vectorizer(test_docs)[0][0],vocabulary_vectorizer(test_docs)[0][1]))
