@@ -55,7 +55,6 @@ def søk_film(tittel: str) -> list[dict]:
     Returns:
         list[dict]: Filmene som har tittlen.
     """
-    #TODO: Legg till et argument til, dette argumentet bestemmer hva man søker etter, sånn man kan søke etter regissører, produsenter etc.
     tittler = [film["tittel"] for film in filmer] #Tittlene til alle filmene i databasen.
     print([navn for navn in tittler if tittel.lower() in navn.lower()]) #`.lower()` er for å gjøre det case insensitive.
     return
@@ -147,7 +146,15 @@ def legg_til_film_via_OMDb(tittel: str = None) -> json:
     legg_til_film(tittel = response_text["Title"],regissør = response_text["Director"],produsent=response_text["Production"],år=response_text["Released"][-4:], sjanger=response_text["Genre"])
     return response_text["Poster"]
 
-def TFIDF_analysis(documents:list):
+def TFIDF_analysis(documents:list[str]) -> dict:
+    """Gjør en TF-IDF (Term-Frequency Inverse-Document-Frequency) analyse av documentene
+
+    Args:
+        documents (list): Liste av text i string form.
+
+    Returns:
+        dict: En dict av ordene i documentene. Nøkkelen er ordet, verdien er hvor "viktig" (ifølge TF-IDF analysen) ordene er. 
+    """
     tfidf = TfidfVectorizer()
     result = tfidf.fit_transform(documents)
     tfidf_dict = {}
@@ -156,24 +163,35 @@ def TFIDF_analysis(documents:list):
     tfidf_dict = dict(sorted(tfidf_dict.items(), key=lambda item: item[1], reverse=True))
     return tfidf_dict
 
-def vocabulary_vectorizer(document:list):
-    """
+def vocabulary_vectorizer(document:list[str]):
+    """Gjør documenter om til vektorer.
+
+    Args:
+        document (list): Liste av string documenter.
+
     Returns:
-        list[0]: Gir vektorer.
-        list[1]: Gir vocabular
+        list: En liste hvor:
+            - første element (index 0) gir en liste med alle vektorene i document corpuset
+            - andre element (index 1) gir en dict med vocabularet til vektorene
     """
     vectorizer = CountVectorizer()
     vectorizer.fit(document)
     vector = vectorizer.transform(document)
     return [vector.toarray(),vectorizer.vocabulary_]
 
-def cosine_similarity(vector_a:list, vector_b:list):
+def cosine_similarity(vector_a:list, vector_b:list) -> float:
+    """Finner likheten mellom de to vektorene via Cosinus likhet.
+
+    Args:
+        vector_a (list): Første Vektor.
+        vector_b (list): Andre Vektor.
+
+    Returns:
+        float: Cosinus likheten.
+    """
     return np.dot(vector_a,vector_b)/(np.linalg.norm(vector_a)*np.linalg.norm(vector_b))
 
 if not os.path.exists("Filmer.json"):
     with open("Filmer.json", "w", encoding="utf8") as file:
         json.dump([], file, ensure_ascii=False)
 
-test_docs = ["This is a test", "Dette er også en test"]
-
-#pprint(cosine_similarity(vocabulary_vectorizer(test_docs)[0][0],vocabulary_vectorizer(test_docs)[0][1]))
