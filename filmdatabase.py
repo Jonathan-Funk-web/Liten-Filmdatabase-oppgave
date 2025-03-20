@@ -14,7 +14,7 @@ load_dotenv(Path(".env"))
 API_KEY = os.getenv("OMDb_API_KEY")
 
 
-def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Mangler", produsent: str ="Produsent Mangler", år: int = 0, sjanger: list[str] = ["Sjanger(e) Mangler"]) -> None:
+def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Mangler", produsent: str ="Produsent Mangler", år: int = 0, sjanger: list[str] = ["Sjanger(e) Mangler"], plot: str = "Plot Mangler") -> None:
     """Tar de forselige detaljene til filmen og lagrer de som en ordbok i `filmer` listen.
     Args:
         tittel (str, optional): Tittelen til filmen. Hvis ingen verdi er oppgit så er standardverdien `"Tittel Mangler"`.
@@ -26,7 +26,7 @@ def legg_til_film(tittel: str = "Tittel Mangler", regissør: str ="Regissør Man
         dict: Slår sammen all infoen in til en ordbok.
     """
     
-    filmer.append({"tittel":tittel, "regissør":regissør, "produsent":produsent, "år":år, "sjanger":sjanger})
+    filmer.append({"tittel":tittel, "regissør":regissør, "produsent":produsent, "år":år, "sjanger":sjanger, "plot":plot})
     
     print("Film lagt til i `filmer` listen.")
     
