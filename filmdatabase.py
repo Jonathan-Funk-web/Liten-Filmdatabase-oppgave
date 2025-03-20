@@ -195,3 +195,11 @@ if not os.path.exists("Filmer.json"):
     with open("Filmer.json", "w", encoding="utf8") as file:
         json.dump([], file, ensure_ascii=False)
 
+with open ("Filmer.json", "r") as file:
+    data = json.load(file)
+
+movie_plots = []
+for i in range(len(data)):
+    movie_plots.append(data[i]["plot"])
+
+pprint(vocabulary_vectorizer(movie_plots))
