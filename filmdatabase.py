@@ -10,6 +10,12 @@ import numpy as np
 
 filmer = []
 
+
+if not os.path.exists(".env"):
+    with open(".env", "w") as file:
+        file.write("OMDb_API_KEY = " + input("What is your OMDb-API key?"))
+
+
 load_dotenv(Path(".env"))
 API_KEY = os.getenv("OMDb_API_KEY")
 
@@ -202,4 +208,3 @@ movie_plots = []
 for i in range(len(data)):
     movie_plots.append(data[i]["plot"])
 
-pprint(vocabulary_vectorizer(movie_plots))
