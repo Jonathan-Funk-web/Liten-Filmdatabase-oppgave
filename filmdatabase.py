@@ -11,8 +11,15 @@ import numpy as np
 filmer = []
 
 
-if not os.path.exists(".env"):
-    API_KEY = input("What is your OMDb-API key? ")
+
+def setup_API_key(API_KEY = False):
+    """Setter opp API nøkkelen
+
+    Args:
+        API_KEY (bool | str): API-nøkkelen til OMDb-APIet, hvis den er `False` så blir man spurt i terminalen for å skrive den inn. Hvis det er en string så blir den stringen brukt som API-nøkkelen. Standardverdi er `False`.
+    """
+    if not API_KEY:
+        API_KEY = input("What is your OMDb-API key? ")
     response = requests.get("https://www.omdbapi.com/?apikey=" + API_KEY)
     response_text = json.loads(response.text)
     if response_text["Error"] == "Incorrect IMDb ID.":
@@ -22,6 +29,8 @@ if not os.path.exists(".env"):
     else:
         print("Key invalid.")
 
+if not os.path.exists(".env"):
+    setup_API_key()
 
 load_dotenv(Path(".env"))
 API_KEY = os.getenv("OMDb_API_KEY")
