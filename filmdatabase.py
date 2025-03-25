@@ -7,16 +7,15 @@ from pathlib import Path
 from pprint import pprint
 import numpy as np
 
-
 filmer = []
-
-
 
 def setup_API_key(API_KEY = False):
     """Setter opp API nøkkelen
 
     Args:
         API_KEY (bool | str): API-nøkkelen til OMDb-APIet, hvis den er `False` så blir man spurt i terminalen for å skrive den inn. Hvis det er en string så blir den stringen brukt som API-nøkkelen. Standardverdi er `False`.
+    Returns:
+        bool: True hvis nøkkelen ble satt opp riktig, False hvis nøkklen ikke ble satt opp
     """
     if not API_KEY:
         API_KEY = input("What is your OMDb-API key? ")
@@ -26,11 +25,15 @@ def setup_API_key(API_KEY = False):
         print("Key set up correctly!")
         with open(".env", "w") as file:
             file.write("OMDb_API_KEY = " + API_KEY)
+        return True
     else:
         print("Key invalid.")
+        return False
 
-if not os.path.exists(".env"):
-    setup_API_key()
+if __name__ == "__main__":
+    print("Im running from the FD module")
+    if not os.path.exists(".env"):
+        setup_API_key()
 
 load_dotenv(Path(".env"))
 API_KEY = os.getenv("OMDb_API_KEY")

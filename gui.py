@@ -6,6 +6,29 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import json, os
 
+
+def submit():
+    user_input = entry.get()
+    if fd.setup_API_key(user_input):
+        messagebox.showinfo("Key setup", "Success! Key set up correctly.")
+    else:
+        messagebox.showinfo("Key setup", "Failure! Key was not set up.")
+    popup.destroy()
+    
+if not os.path.exists(".env"):
+    popup = Tk()
+    popup.title("Input Required")
+    popup.geometry("300x150")
+    
+    label = Label(popup, text="OMDb API key:")
+    label.pack(pady=5)
+    
+    entry = Entry(popup)
+    entry.pack(pady=5)
+    
+    submit_button = Button(popup, text="Submit", command=submit)
+    submit_button.pack(pady=5)
+
 API_KEY = os.getenv("OMDb_API_KEY")
 
 # Oppretter hovedvinduet
