@@ -1,10 +1,10 @@
 import requests
 import json
-import os                                                                                                                                                                                                          
+import os
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from dotenv import load_dotenv
 from pathlib import Path
-from pprint import pprint 
+from pprint import pprint
 import numpy as np
 
 
@@ -12,8 +12,15 @@ filmer = []
 
 
 if not os.path.exists(".env"):
-    with open(".env", "w") as file:
-        file.write("OMDb_API_KEY = " + input("What is your OMDb-API key?"))
+    API_KEY = input("What is your OMDb-API key? ")
+    response = requests.get("https://www.omdbapi.com/?apikey=" + API_KEY)
+    response_text = json.loads(response.text)
+    if response_text["Error"] == "Incorrect IMDb ID.":
+        print("Key set up correctly!")
+        with open(".env", "w") as file:
+            file.write("OMDb_API_KEY = " + API_KEY)
+    else:
+        print("Key invalid.")
 
 
 load_dotenv(Path(".env"))
