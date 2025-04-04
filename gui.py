@@ -240,6 +240,10 @@ def legg_til_film_via_OMDb_gui():
     root.mainloop()
 
 
+def velg_film_liste():
+    ...
+
+
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
     fd.lagre_til_fil("Filmer")
@@ -253,6 +257,7 @@ Button(root, text="Legg til ny film", command=legg_til_film_gui).pack(pady=5)
 Button(root, text="Søk etter film", command=søk_film_gui).pack(pady=5)
 Button(root, text="Legg til film via OMDb", command=legg_til_film_via_OMDb_gui).pack(pady=5)
 Button(root, text="Sorter filmer", command=sorter_filmer_gui).pack(pady=5)
+Button(root, text="Velg film liste", command=velg_film_liste).pack(pady=5)
 Button(root, text="Lagre og avslutt", command=lagre_og_avslutt).pack(pady=5)
 
 # Kjører Tkinter-hovedløkken

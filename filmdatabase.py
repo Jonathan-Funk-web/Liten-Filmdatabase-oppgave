@@ -31,7 +31,6 @@ def setup_API_key(API_KEY = False):
         return False
 
 if __name__ == "__main__":
-    print("Im running from the FD module")
     if not os.path.exists(".env"):
         setup_API_key()
 
@@ -90,7 +89,7 @@ def lagre_til_fil(filnavn: str = "Filmer" ) -> None:
     Args:
         filnavn (str): Navnet til JSON filen.
     """    
-    with open(filnavn +".json", "w", encoding="utf8") as json_file:
+    with open(Path("Filmer/" + filnavn +".json"), "w", encoding="utf8") as json_file:
         json.dump(filmer,json_file,ensure_ascii=False)
 
 def last_inn_fra_fil(filnavn: str = "Filmer") -> None:
@@ -216,11 +215,13 @@ def cosine_similarity(vector_a:list, vector_b:list) -> float:
     """
     return np.dot(vector_a,vector_b)/(np.linalg.norm(vector_a)*np.linalg.norm(vector_b))
 
-if not os.path.exists("Filmer.json"):
-    with open("Filmer.json", "w", encoding="utf8") as file:
-        json.dump([], file, ensure_ascii=False)
+if not os.path.exists("Filmer"):
+    os.makedirs("Filmer")
+    if not os.path.exists(Path("Filmer/Filmer.json")):
+        with open(Path("Filmer/Filmer.json"), "w", encoding="utf8") as file:
+            json.dump([], file, ensure_ascii=False)
 
-with open ("Filmer.json", "r") as file:
+with open(Path("Filmer/Filmer.json"), "r") as file:
     data = json.load(file)
 
 movie_plots = []
