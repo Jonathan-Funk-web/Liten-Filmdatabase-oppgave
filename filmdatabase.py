@@ -215,13 +215,13 @@ def cosine_similarity(vector_a:list, vector_b:list) -> float:
     """
     return np.dot(vector_a,vector_b)/(np.linalg.norm(vector_a)*np.linalg.norm(vector_b))
 
-if not os.path.exists("Filmer"):
-    os.makedirs("Filmer")
-    if not os.path.exists(Path("Filmer/Filmer.json")):
-        with open(Path("Filmer/Filmer.json"), "w", encoding="utf8") as file:
+if not os.path.exists("Film_Lister"):
+    os.makedirs("Film_Lister")
+    if not os.path.exists(Path("Film_Lister/Filmer.json")):
+        with open(Path("Film_Lister/Filmer.json"), "w", encoding="utf8") as file:
             json.dump([], file, ensure_ascii=False)
 
-with open(Path("Filmer/Filmer.json"), "r") as file:
+with open(Path("Film_Lister/Filmer.json"), "r") as file:
     data = json.load(file)
 
 movie_plots = []
