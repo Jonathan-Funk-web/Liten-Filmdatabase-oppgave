@@ -89,7 +89,7 @@ def lagre_til_fil(filnavn: str = "Filmer" ) -> None:
     Args:
         filnavn (str): Navnet til JSON filen.
     """    
-    with open(Path("Filmer/" + filnavn +".json"), "w", encoding="utf8") as json_file:
+    with open(Path("Film_Lister/" + filnavn +".json"), "w", encoding="utf8") as json_file:
         json.dump(filmer,json_file,ensure_ascii=False)
 
 def last_inn_fra_fil(filnavn: str = "Filmer") -> None:
