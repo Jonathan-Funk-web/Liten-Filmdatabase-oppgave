@@ -8,6 +8,7 @@ from pprint import pprint
 import numpy as np
 
 filmer = []
+film_liste_fil = ""
 
 def setup_API_key(API_KEY = False):
     """Setter opp API nøkkelen
@@ -89,8 +90,8 @@ def lagre_til_fil(filnavn: str = "Filmer" ) -> None:
     Args:
         filnavn (str): Navnet til JSON filen.
     """    
-    with open(Path("Film_Lister/" + filnavn +".json"), "w", encoding="utf8") as json_file:
-        json.dump(filmer,json_file,ensure_ascii=False)
+    with open(Path("Film_Lister/" + filnavn + ".json"), "w", encoding="utf8") as json_file:
+        json.dump(filmer, json_file, ensure_ascii=False)
 
 def last_inn_fra_fil(filnavn: str = "Filmer") -> None:
     """Laster in filmer fra en JSON fil.

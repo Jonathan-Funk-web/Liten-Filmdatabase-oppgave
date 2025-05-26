@@ -241,8 +241,29 @@ def legg_til_film_via_OMDb_gui():
 
 
 def velg_film_liste():
-    ...
-
+    root = Toplevel()
+    root.title("Velg Film Liste")
+    root.geometry("275x300")
+    
+    Lb = Listbox(root)
+    i = 1
+    
+    for film_liste in os.listdir("Film_Lister"):
+        Lb.insert(i, film_liste)
+        i = i + 1
+        
+    def velg_fra_liste():
+        #TODO: Make sure that only `.json` files can be viewed.
+        #TODO: Gjør at den valgte listen blir faktisk brukt.
+        #TODO: Gjør at man kan lage en ny liste.
+        global film_liste_fil
+        for i in Lb.curselection():
+            film_liste_fil = Lb.get(i).split(".")[0]
+        
+    btn = Button(root, text="Velg Liste", command=velg_fra_liste)
+    btn.pack(side="bottom")
+    Lb.pack()
+    root.mainloop()
 
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
