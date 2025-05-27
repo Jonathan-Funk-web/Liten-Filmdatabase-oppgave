@@ -241,6 +241,8 @@ def legg_til_film_via_OMDb_gui():
 
 
 def velg_film_liste():
+    global film_liste_fil
+    
     root = Toplevel()
     root.title("Velg Film Liste")
     root.geometry("275x300")
@@ -259,17 +261,18 @@ def velg_film_liste():
         global film_liste_fil
         for i in Lb.curselection():
             film_liste_fil = Lb.get(i).split(".")[0]
-        
+            root.destroy()
+        fd.last_inn_fra_fil(film_liste_fil)
     btn = Button(root, text="Velg Liste", command=velg_fra_liste)
-    btn.pack(side="bottom")
+    btn.pack(side="bottom", pady=10)
     Lb.pack()
     root.mainloop()
 
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
-    fd.lagre_til_fil("Filmer")
+    fd.lagre_til_fil(film_liste_fil)
     messagebox.showinfo("Lagring", "Filmer lagret. Programmet avsluttes.")
-    root.quit()
+    root.destroy()
 
 # GUI-komponenter
 Label(root, text="Filmdatabase", font=("Arial", 16)).pack(pady=10)
