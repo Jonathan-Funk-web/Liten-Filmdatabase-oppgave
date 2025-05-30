@@ -6,6 +6,8 @@ from PIL import Image, ImageTk
 from io import BytesIO
 import json, os
 
+film_liste_fil = "filmer" #standard filen for lagring av film lister.
+
 
 def submit():
     user_input = entry.get()
@@ -34,7 +36,7 @@ API_KEY = os.getenv("OMDb_API_KEY")
 # Oppretter hovedvinduet
 root = Tk()
 root.title("Filmdatabase")
-root.geometry("275x300")
+root.geometry("275x315")
 
 # Funksjon for å vise filmer i et popup-vindu
 def vis_filmer_gui():
@@ -270,6 +272,7 @@ def velg_film_liste():
 
 # Funksjon for å lagre filmene til fil og avslutte programmet
 def lagre_og_avslutt():
+    global film_liste_fil
     fd.lagre_til_fil(film_liste_fil)
     messagebox.showinfo("Lagring", "Filmer lagret. Programmet avsluttes.")
     root.destroy()
