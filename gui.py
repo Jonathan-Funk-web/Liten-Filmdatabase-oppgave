@@ -265,8 +265,23 @@ def velg_film_liste():
             film_liste_fil = Lb.get(i).split(".")[0]
             root.destroy()
         fd.last_inn_fra_fil(film_liste_fil)
+    
+    def lag_liste():
+        liste_navn = simpledialog.askstring(" ", "Tittel på listen:")
+        if liste_navn:
+            with open("Film_Lister/" + liste_navn + ".json", "w") as f:
+                f.write("[]")
+        if os.path.isfile("Film_Lister/" + liste_navn + ".json"):
+            raise NameError("Venligst gi listen et navn som ikke er brukt av en annen liste.")
+        if not liste_navn:
+            raise NameError("Venligst gi listen et navn.")
+        root.destroy()
+
+    
     btn = Button(root, text="Velg Liste", command=velg_fra_liste)
+    btn2 = Button(root, text="Lag ny Liste", command=lag_liste)
     btn.pack(side="bottom", pady=10)
+    btn2.pack(side="bottom")
     Lb.pack()
     root.mainloop()
 
