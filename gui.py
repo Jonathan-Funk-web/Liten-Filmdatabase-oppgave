@@ -253,13 +253,10 @@ def velg_film_liste():
     i = 1
     
     for film_liste in os.listdir("Film_Lister"):
-        Lb.insert(i, film_liste)
+        Lb.insert(i, film_liste.split(".")[0])
         i = i + 1
         
     def velg_fra_liste():
-        #TODO: Make sure that only `.json` files can be viewed.
-        #TODO: Gjør at den valgte listen blir faktisk brukt.
-        #TODO: Gjør at man kan lage en ny liste.
         global film_liste_fil
         for i in Lb.curselection():
             film_liste_fil = Lb.get(i).split(".")[0]
@@ -268,11 +265,11 @@ def velg_film_liste():
     
     def lag_liste():
         liste_navn = simpledialog.askstring(" ", "Tittel på listen:")
+        if os.path.isfile("Film_Lister/" + liste_navn + ".json"):
+            raise NameError("Venligst gi listen et navn som ikke er brukt av en annen liste.")
         if liste_navn:
             with open("Film_Lister/" + liste_navn + ".json", "w") as f:
                 f.write("[]")
-        if os.path.isfile("Film_Lister/" + liste_navn + ".json"):
-            raise NameError("Venligst gi listen et navn som ikke er brukt av en annen liste.")
         if not liste_navn:
             raise NameError("Venligst gi listen et navn.")
         root.destroy()
