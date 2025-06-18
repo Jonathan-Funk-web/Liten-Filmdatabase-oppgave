@@ -4,7 +4,7 @@ from tkinter import messagebox, simpledialog
 import requests
 from PIL import Image, ImageTk
 from io import BytesIO
-import json, os
+import json, os, sys
 
 film_liste_fil = "filmer" #standard filen for lagring av film lister.
 
@@ -12,7 +12,8 @@ film_liste_fil = "filmer" #standard filen for lagring av film lister.
 def submit():
     user_input = entry.get()
     if fd.setup_API_key(user_input):
-        messagebox.showinfo("Key setup", "Success! Key set up correctly.")
+        messagebox.showinfo("Key setup", "Success! Key set up correctly.\nRestarting program")
+        os.execl(sys.executable, sys.executable, *sys.argv)
     else:
         messagebox.showinfo("Key setup", "Failure! Key was not set up.")
     popup.destroy()
